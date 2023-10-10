@@ -6,6 +6,13 @@
 #include <string.h>
 
 
+#define IS_PRIME  0b00
+#define NOT_PRIME 0b11
+#define UNKNOWN   0b10
+
+#define INDEX(num)  (((num)-1) / 4)
+#define OFFSET(num) ((((num) + 3) % 4) * 2)
+
 struct prime_list_t {
 	size_t max_size;
 	size_t max_num;
@@ -13,21 +20,18 @@ struct prime_list_t {
 };
 
 int _isnotprime(const char* bit_list, size_t num) {
-	return (bit_list[(num - 1) / 4]
-	        & (0b11 << ((num + 3) % 4) * 2))
-	    >> ((num + 3) % 4) * 2;
+	return (bit_list[INDEX(num)] & (0b11 << OFFSET(num)))
+	    >> OFFSET(num);
 }
 
 void _setisprime(char* bit_list, size_t num) {
 	// 0b00 表示为质数
-	bit_list[(num - 1) / 4] &=
-	    ~(0b11 << ((num + 3) % 4) * 2);
+	bit_list[INDEX(num)] &= ~(0b11 << OFFSET(num));
 }
 
 void _setnotprime(char* bit_list, size_t num) {
 	// 0b11 表示非质数
-	bit_list[(num - 1) / 4] |=
-	    (0b11 << ((num + 3) % 4) * 2);
+	bit_list[INDEX(num)] |= (0b11 << OFFSET(num));
 }
 
 int prime_list_init(struct prime_list_t* prime_list,
@@ -42,7 +46,7 @@ int prime_list_init(struct prime_list_t* prime_list,
 
 	_setisprime(prime_list->bit_list, 2);
 	for(size_t i = 3; i <= max_num; i++) {
-		if(_isnotprime(prime_list->bit_list, i) != 0b10)
+		if(_isnotprime(prime_list->bit_list, i) != UNKNOWN)
 			continue;
 
 		int isprime = 1;
