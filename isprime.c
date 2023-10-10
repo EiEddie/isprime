@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <limits.h>
+#include <string.h>
 
 
 struct prime_list_t {
@@ -11,28 +12,43 @@ struct prime_list_t {
 	char* bit_list;
 };
 
-int _isprime(const char* bit_list, size_t num) {
-	return !!(bit_list[(num - 1) / 8]
-	          & (1 << ((num + 7) % 8)));
+int _isnotprime(const char* bit_list, size_t num) {
+	return (bit_list[(num - 1) / 4]
+	        & (0b11 << ((num + 3) % 4) * 2))
+	    >> ((num + 3) % 4) * 2;
 }
 
-void _setprime(char* bit_list, size_t num) {
-	bit_list[(num - 1) / 8] |= (1 << ((num + 7) % 8));
+void _setisprime(char* bit_list, size_t num) {
+	// 0b00 表示为质数
+	bit_list[(num - 1) / 4] &=
+	    ~(0b11 << ((num + 3) % 4) * 2);
+}
+
+void _setnotprime(char* bit_list, size_t num) {
+	// 0b11 表示非质数
+	bit_list[(num - 1) / 4] |=
+	    (0b11 << ((num + 3) % 4) * 2);
 }
 
 int prime_list_init(struct prime_list_t* prime_list,
                     size_t max_num) {
 	prime_list->max_num = max_num;
-	prime_list->max_size = (max_num + 7) / 8;
+	prime_list->max_size = (max_num + 3) / 4;
 	prime_list->bit_list =
-	    (char*)calloc(prime_list->max_size, sizeof(char));
+	    (char*)malloc(prime_list->max_size * sizeof(char));
+	// 0b10 表示未判断
+	memset(prime_list->bit_list, 0b10101010,
+	       prime_list->max_size);
 
-	_setprime(prime_list->bit_list, 2);
+	_setisprime(prime_list->bit_list, 2);
 	for(size_t i = 3; i <= max_num; i++) {
+		if(_isnotprime(prime_list->bit_list, i) != 0b10)
+			continue;
+
 		int isprime = 1;
 		for(size_t j = 2; j <= (size_t)sqrt((double)i) + 1;
 		    j++) {
-			if(!_isprime(prime_list->bit_list, j))
+			if(_isnotprime(prime_list->bit_list, j))
 				continue;
 			if(!(i % j)) {
 				isprime = 0;
@@ -40,7 +56,7 @@ int prime_list_init(struct prime_list_t* prime_list,
 			}
 		}
 		if(isprime)
-			_setprime(prime_list->bit_list, i);
+			_setisprime(prime_list->bit_list, i);
 	}
 
 	return 0;
@@ -60,7 +76,7 @@ size_t prime_list_print(struct prime_list_t* prime_list,
 	size_t num = 1;
 	while(_cnt < cnt) {
 		while(1) {
-			if(_isprime(prime_list->bit_list, ++num))
+			if(!_isnotprime(prime_list->bit_list, ++num))
 				break;
 		}
 		if(num > prime_list->max_num)
