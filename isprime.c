@@ -72,3 +72,15 @@ size_t prime_list_print(struct prime_list_t* prime_list,
 
 	return _cnt;
 }
+
+
+int main(int argc, char* argv[]) {
+	struct prime_list_t prime_list;
+	prime_list_init(&prime_list, 10000);
+
+	printf("\ncount: %lu\n",
+	       prime_list_print(&prime_list, -1));
+
+	prime_list_free(&prime_list);
+	return 0;
+}
