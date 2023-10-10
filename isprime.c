@@ -55,8 +55,16 @@ int prime_list_init(struct prime_list_t* prime_list,
 				break;
 			}
 		}
-		if(isprime)
+
+		if(isprime) {
 			_setisprime(prime_list->bit_list, i);
+			continue;
+		}
+
+		for(size_t k = 1; k * i < prime_list->max_num;
+		    k++) {
+			_setnotprime(prime_list->bit_list, k * i);
+		}
 	}
 
 	return 0;
