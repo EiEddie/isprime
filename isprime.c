@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdio.h>
+#include <limits.h>
 
 
 struct prime_list_t {
@@ -47,4 +49,26 @@ int prime_list_init(struct prime_list_t* prime_list,
 void prime_list_free(struct prime_list_t* prime_list) {
 	prime_list->max_size = prime_list->max_num = 0;
 	free(prime_list->bit_list);
+}
+
+size_t prime_list_print(struct prime_list_t* prime_list,
+                        int cnt) {
+	if(cnt == -1)
+		cnt = INT_MAX;
+
+	size_t _cnt = 0;
+	size_t num = 1;
+	while(_cnt < cnt) {
+		while(1) {
+			if(_isprime(prime_list->bit_list, ++num))
+				break;
+		}
+		if(num > prime_list->max_num)
+			break;
+		printf(",%lu" + !_cnt, num);
+		_cnt++;
+	}
+	fputc('\n', stdout);
+
+	return _cnt;
 }
