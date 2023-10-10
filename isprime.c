@@ -1,6 +1,5 @@
 #include <stddef.h>
 #include <stdlib.h>
-#include <math.h>
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
@@ -41,33 +40,13 @@ int prime_list_init(struct prime_list_t* prime_list,
 	prime_list->bit_list =
 	    (char*)malloc(prime_list->max_size * sizeof(char));
 	// 0b10 表示未判断
-	memset(prime_list->bit_list, 0b10101010,
+	memset(prime_list->bit_list, 0b00000000,
 	       prime_list->max_size);
 
-	_setisprime(prime_list->bit_list, 2);
-	for(size_t i = 3; i <= max_num; i++) {
-		if(_isnotprime(prime_list->bit_list, i) != UNKNOWN)
-			continue;
-
-		int isprime = 1;
-		for(size_t j = 2; j <= (size_t)sqrt((double)i) + 1;
+	for(size_t i = 2; i <= max_num; i++) {
+		for(size_t j = 2; j * i <= prime_list->max_num;
 		    j++) {
-			if(_isnotprime(prime_list->bit_list, j))
-				continue;
-			if(!(i % j)) {
-				isprime = 0;
-				break;
-			}
-		}
-
-		if(isprime) {
-			_setisprime(prime_list->bit_list, i);
-			continue;
-		}
-
-		for(size_t k = 1; k * i < prime_list->max_num;
-		    k++) {
-			_setnotprime(prime_list->bit_list, k * i);
+			_setnotprime(prime_list->bit_list, j * i);
 		}
 	}
 
