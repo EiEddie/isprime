@@ -2,15 +2,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
-#include <string.h>
 
 
-#define IS_PRIME  0b00
-#define NOT_PRIME 0b11
-#define UNKNOWN   0b10
-
-#define INDEX(num)  (((num)-1) / 4)
-#define OFFSET(num) ((((num) + 3) % 4) * 2)
+#define INDEX(num)  (((num)-1) / 8)
+#define OFFSET(num) (((num) + 7) % 8)
 
 struct prime_list_t {
 	size_t max_size;
@@ -18,30 +13,20 @@ struct prime_list_t {
 	char* bit_list;
 };
 
-int _isnotprime(const char* bit_list, size_t num) {
-	return (bit_list[INDEX(num)] & (0b11 << OFFSET(num)))
-	    >> OFFSET(num);
+static int _isnotprime(const char* bit_list, size_t num) {
+	return bit_list[INDEX(num)] & (1 << OFFSET(num));
 }
 
-void _setisprime(char* bit_list, size_t num) {
-	// 0b00 表示为质数
-	bit_list[INDEX(num)] &= ~(0b11 << OFFSET(num));
-}
-
-void _setnotprime(char* bit_list, size_t num) {
-	// 0b11 表示非质数
-	bit_list[INDEX(num)] |= (0b11 << OFFSET(num));
+static void _setnotprime(char* bit_list, size_t num) {
+	bit_list[INDEX(num)] |= 1 << OFFSET(num);
 }
 
 int prime_list_init(struct prime_list_t* prime_list,
                     size_t max_num) {
 	prime_list->max_num = max_num;
-	prime_list->max_size = (max_num + 3) / 4;
+	prime_list->max_size = (max_num + 7) / 8;
 	prime_list->bit_list =
-	    (char*)malloc(prime_list->max_size * sizeof(char));
-	// 0b10 表示未判断
-	memset(prime_list->bit_list, 0b00000000,
-	       prime_list->max_size);
+	    (char*)calloc(prime_list->max_size, sizeof(char));
 
 	for(size_t i = 2; i <= max_num; i++) {
 		for(size_t j = 2; j * i <= prime_list->max_num;
