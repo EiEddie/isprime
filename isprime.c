@@ -1,7 +1,6 @@
-#include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <limits.h>
 
 
 #define INDEX(num)  (((num)-1) / 8)
@@ -44,9 +43,9 @@ void prime_list_free(struct prime_list_t* prime_list) {
 }
 
 size_t prime_list_print(struct prime_list_t* prime_list,
-                        int cnt) {
-	if(cnt == -1)
-		cnt = INT_MAX;
+                        size_t cnt) {
+	if(cnt == 0)
+		cnt = SIZE_MAX;
 
 	size_t _cnt = 0;
 	size_t num = 1;
@@ -57,7 +56,7 @@ size_t prime_list_print(struct prime_list_t* prime_list,
 		}
 		if(num > prime_list->max_num)
 			break;
-		printf(",%lu" + !_cnt, num);
+		printf(&",%lu"[!_cnt], num);
 		_cnt++;
 	}
 	fputc('\n', stdout);
@@ -73,7 +72,7 @@ int main(int argc, char* argv[]) {
 	prime_list_init(&prime_list, max);
 
 	printf("\ncount: %lu\n",
-	       prime_list_print(&prime_list, -1));
+	       prime_list_print(&prime_list, 0));
 
 	prime_list_free(&prime_list);
 	return 0;
