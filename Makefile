@@ -3,7 +3,7 @@ C_FLAGS = -Wall
 
 target = bin/isprime
 c_srcs = isprime.c
-libs = m
+libs =
 
 objs = $(patsubst %.c,tmp/%.o,$(c_srcs))
 
