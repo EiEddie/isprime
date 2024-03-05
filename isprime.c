@@ -50,10 +50,7 @@ size_t prime_list_print(struct prime_list_t* prime_list,
 	size_t _cnt = 0;
 	size_t num = 1;
 	while(_cnt < cnt) {
-		while(1) {
-			if(!_isnotprime(prime_list->bit_list, ++num))
-				break;
-		}
+		while(_isnotprime(prime_list->bit_list, ++num);
 		if(num > prime_list->max_num)
 			break;
 		printf(&",%lu"[!_cnt], num);
